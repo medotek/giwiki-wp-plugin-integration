@@ -31,10 +31,7 @@ module.exports = {
                 test: /\.scss$/,
                 exclude: /node_modules/,
                 use: [
-                    // fallback to style-loader in development
-                    process.env.NODE_ENV !== "production"
-                        ? "style-loader"
-                        : MiniCssExtractPlugin.loader,
+                    { loader: MiniCssExtractPlugin.loader },
                     {
                         loader: "css-loader",
                         options: {
@@ -58,6 +55,9 @@ module.exports = {
                         options: {
                             sourceMap: true // il est indispensable d'activer les sourcemaps pour que postcss fonctionne correctement
                         }
+                    },
+                    {
+                        loader: 'style-loader',
                     }
                 ]
             },
