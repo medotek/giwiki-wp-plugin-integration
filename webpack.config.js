@@ -1,57 +1,36 @@
-const path = require('path')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const dev = process.env.NODE_ENV === 'dev'
+// Require path.
+const path = require( 'path' );
 
-const styleLoaders = [
-    {
-        loader: MiniCssExtractPlugin.loader,
-        options: {
-            hmr: process.env.NODE_ENV === 'development'
-        }
-    },
-    'css-loader'
-]
-
+// Configuration object.
 const config = {
-    entry: {
-        app: ['./assets/scss/app.scss', './assets/js/app.js']
+    // Create the entry points.
+    // One for frontend and one for the admin area.
+    entry:  './assets/js/app.js',
+
+    // Create the output files.
+    // One for each of our entry points.
+    output: {
+        // [name] allows for the entry object keys to be used as file names.
+        filename: '[name].js',
+        // Specify the path to the JS files.
+        path: path.resolve( __dirname, 'build' )
     },
-    resolve: {
-        alias: {
-            '@': path.resolve('./assets/js/'),
-            '@css': path.resolve('./assets/css/'),
-            '@scss': path.resolve('./assets/scss/')
-        }
-    },
-    watch: dev,
-    mode: dev ? 'development' : 'production',
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'style.bundle.css'
-        })
-    ],
+
+    // Setup a loader to transpile down the latest and great JavaScript so older browsers
+    // can understand it.
     module: {
         rules: [
             {
+                // Look for any .js files.
                 test: /\.js$/,
-                exclude: /(node_modules)/,
-                use: ['eslint-loader']
-            },
-            {
-                test: /\.css$/,
-                use: styleLoaders
-            },
-            {
-                test: /\.scss$/,
-                use: [...styleLoaders, 'sass-loader']
-            },
+                // Exclude the node_modules folder.
+                exclude: /node_modules/,
+                // Use babel loader to transpile the JS files.
+                loader: 'babel-loader'
+            }
         ]
-    },
-    output: {
-        path: path.resolve(__dirname, 'public/assets'),
-        filename: '[name].bundle.js'
     }
-
 }
 
-module.exports = config
+// Export the config object.
+module.exports = config;
