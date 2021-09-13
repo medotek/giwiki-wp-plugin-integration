@@ -54,6 +54,9 @@ module.exports = {
                         options: {
                             sourceMap: true // il est indispensable d'activer les sourcemaps pour que postcss fonctionne correctement
                         }
+                    },
+                    {
+                        loader: 'style-loader',
                     }
                 ]
             },
