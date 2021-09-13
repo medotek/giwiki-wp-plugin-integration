@@ -1,5 +1,5 @@
 import '../css/weapon.scss';
-import 'animate.css';
+// import 'animate.css';
 const $ = require('jquery');
 const Isotope = require('isotope-layout');
 jQueryBridget('isotope', Isotope, $);
