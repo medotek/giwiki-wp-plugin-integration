@@ -1,4 +1,4 @@
-import '../scss/weapon.scss';
+// import '../scss/weapon.scss';
 // import 'animate.css';
 const $ = require('jquery');
 const Isotope = require('isotope-layout');
