@@ -31,7 +31,10 @@ module.exports = {
                 test: /\.scss$/,
                 exclude: /node_modules/,
                 use: [
-                    { loader: MiniCssExtractPlugin.loader },
+                    // fallback to style-loader in development
+                    process.env.NODE_ENV !== "production"
+                        ? "style-loader"
+                        : MiniCssExtractPlugin.loader,
                     {
                         loader: "css-loader",
                         options: {
