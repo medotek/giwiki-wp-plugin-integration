@@ -4,6 +4,618 @@ $giwiki-light-blue: #D1DCF1;
 $giwiki-orange: #FF461F;
 $giwiki-white: white;
 
+
+.medo {
+  position: relative;
+  height: auto;
+
+  .active-weapon {
+    border: 2px solid $giwiki-orange;
+  }
+
+  .weapons-filter {
+    .active-filter {
+      background-color: $giwiki-orange !important;
+      color: $giwiki-white !important;
+      border: none !important;
+      padding: 5px 10px !important;
+    }
+
+    button {
+      margin-bottom: 5px;
+      border: none;
+      outline: none;
+      background-color: white;
+      color: black;
+      font-weight: 600;
+      padding: 5px 10px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $giwiki-orange;
+        color: $giwiki-white;
+      }
+    }
+  }
+
+  .weapon-search {
+    .quicksearch {
+      width: 100%;
+      max-width: 600px;
+      margin: 10px 0;
+      outline: none;
+      height: 30px;
+      border-radius: 20px;
+      border: 2px solid black;
+      padding-left:20px;
+
+      &:focus, &:focus-visible {
+        border: 2px solid $giwiki-orange;
+      }
+    }
+  }
+
+  #weapons-list {
+    min-height: 500px;
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+
+    .weapon.rarity-5 {
+      background: rgb(255, 230, 158);
+      background: linear-gradient(331deg, rgba(255, 230, 158, 1) 24%, rgba(254, 167, 91, 1) 100%);
+    }
+
+    .weapon.rarity-4 {
+      background: rgb(225, 158, 255);
+      background: linear-gradient(331deg, rgba(225, 158, 255, 1) 24%, rgba(197, 91, 254, 1) 100%);
+    }
+
+    .weapon.rarity-3 {
+      background: rgb(158, 184, 255);
+      background: linear-gradient(331deg, rgba(158, 184, 255, 1) 24%, rgba(91, 127, 254, 1) 100%);
+    }
+
+    .weapon.rarity-2 {
+      background: rgb(119, 237, 108);
+      background: linear-gradient(331deg, rgba(119, 237, 108, 1) 24%, rgba(106, 190, 96, 1) 100%);
+    }
+
+    .weapon.rarity-1 {
+      background: rgb(190, 190, 190);
+      background: linear-gradient(331deg, rgba(190, 190, 190, 1) 24%, rgba(130, 130, 130, 1) 100%);
+    }
+
+    .weapon {
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+      display: flex;
+      margin: 15px;
+
+      .weapon-search {
+        display: none;
+      }
+
+      &:hover {
+        border: 2px solid $giwiki-orange;
+        cursor: pointer;
+      }
+
+      img {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        width: 70px;
+        height: auto;
+      }
+    }
+  }
+
+  .weapon-overlay {
+    background-color: white;
+    position: absolute;
+    bottom: 3px;
+    min-height: 100px;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    display: none;
+
+    .overlay-close {
+      position: absolute;
+      top: 0;
+      right: 20px;
+
+      button {
+        border-style: none;
+        background: transparent;
+        color: $giwiki-orange;
+        cursor: pointer;
+        font-size: 12px;
+        transition: 0.1s ease-in-out;
+        margin-right: 20px;
+        padding: 10px;
+
+        i {
+          font-size: 18px;
+        }
+
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .overlay-header {
+      padding: 20px 20px 0;
+      height: 40px;
+
+      &:hover {
+        cursor: pointer;
+
+        .overlay-mobile {
+          position: absolute;
+          top: 20px;
+        }
+      }
+
+      .overlay-text {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: bold;
+        color: white;
+        font-size: 35px;
+        display: none;
+      }
+
+      .overlay-mobile {
+        z-index: 1;
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        //display: none;
+        height: 3px;
+        max-width: 300px;
+        width: 100%;
+        background: $giwiki-orange;
+        border-radius: 10px;
+      }
+    }
+
+    .weapon-detail {
+      display: flex;
+      padding: 10px 20px;
+      justify-content: center;
+
+      img:nth-child(1) {
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      .weapon-header-info {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+
+        p {
+          margin-top: 0;
+        }
+
+        .weapon-header-title {
+          font-weight: bold;
+          color: $giwiki-orange;
+        }
+
+        .weapon-header-rarity {
+          margin: 0;
+
+          i {
+            color: $giwiki-orange;
+          }
+        }
+      }
+    }
+  }
+
+
+  /**************/
+  /***DETAILED***/
+  /**************/
+
+  .weapon-full-detail {
+    background-color: white;
+    position: absolute;
+    bottom: 3px;
+    min-height: 100px;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 0 20px 20px;
+    display: none;
+    z-index: 1;
+
+    .weapon-hover-close {
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .weapon-full-detail-close {
+      //position: absolute;
+      //top: 0;
+      width: 100%;
+      //height: 40px;
+      z-index: 3;
+
+      .overlay-mobile {
+        z-index: 1;
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        //display: none;
+        height: 3px;
+        max-width: 300px;
+        width: 100%;
+        background: $giwiki-orange;
+        border-radius: 10px;
+      }
+
+      .overlay-text {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: bold;
+        color: white;
+        font-size: 35px;
+        display: none;
+      }
+    }
+
+    .weapon-container {
+      display: flex;
+
+      .weapon-main-info {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+
+        .weapon-img {
+          background: rgb(255, 230, 158);
+          background: linear-gradient(331deg, rgba(255, 230, 158, 1) 24%, rgba(254, 167, 91, 1) 100%);
+          margin-right: 20px;
+          border-radius: 20px;
+
+          img {
+            padding: 10px;
+            max-width: 300px;
+            min-width: 200px;
+            width: 100%;
+            height: auto;
+          }
+        }
+
+        .description {
+          display: flex;
+          flex-direction: column;
+
+          h3 {
+            font-weight: bold;
+            font-size: 18px;
+          }
+
+          .rarity-stars {
+            display: flex;
+
+            i {
+              color: $giwiki-orange;
+            }
+          }
+
+          .weapon-type {
+            font-size: 18px;
+            opacity: 0.7;
+          }
+        }
+      }
+
+      .weapon-group {
+        display: flex;
+        flex-direction: column;
+        align-self: center;
+
+        .weapon-details {
+          display: flex;
+          flex-direction: row;
+
+          .mobile-description {
+            display: none;
+            flex-direction: column;
+
+            h3 {
+              font-weight: bold;
+              font-size: 18px;
+            }
+
+            .rarity-stars {
+              display: flex;
+
+              i {
+                color: $giwiki-orange;
+              }
+            }
+
+            .weapon-type {
+              font-size: 18px;
+              opacity: 0.7;
+            }
+          }
+
+          .weapon-stats {
+            display: grid;
+            grid-template-columns: min-content 100px;
+            grid-template-rows: 50px 50px 50px;
+            align-self: center;
+            width: max-content;
+            margin-right: 20px;
+
+            label.weapon-stats-level {
+              font-weight: bold;
+              font-size: 18px;
+              align-self: center;
+            }
+
+            select.weapon-stats-level {
+              margin-left: 20px;
+              align-self: center;
+            }
+
+            label.weapon-stats-base-atk {
+              font-weight: bold;
+              font-size: 18px;
+              align-self: center;
+            }
+
+            span.weapon-stats-base-atk {
+              margin-left: 20px;
+              align-self: center;
+            }
+
+            label.weapon-stats-second-stat {
+              font-weight: bold;
+              font-size: 18px;
+              align-self: center;
+            }
+
+            .weapon-stats-second-stat-value {
+              margin-left: 20px;
+              align-self: center;
+            }
+
+            .weapon-stats-second-stat-format {
+              align-self: center;
+            }
+          }
+
+          .weapon-passive {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+
+            h3 {
+              margin: 0;
+            }
+          }
+        }
+
+        .weapon-characters {
+          //display: flex;
+
+          .weapon-characters-title {
+            h3 {
+              margin-bottom: 0;
+            }
+          }
+
+          .weapon-characters-container {
+            display: flex;
+            flex-wrap: wrap;
+
+            .overlay-character {
+              img {
+                width: 70px;
+                height: auto;
+                padding: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .mobile-content {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .medo {
+    .weapon-full-detail {
+      .weapon-container {
+        .weapon-main-info {
+          align-self: center;
+
+          .weapon-img {
+            img {
+              min-width: 150px;
+            }
+          }
+
+          .description {
+            display: none;
+          }
+        }
+
+        .weapon-group {
+          .weapon-characters {
+            display: none;
+          }
+
+          .weapon-details {
+            flex-direction: column;
+
+            .mobile-description {
+              display: flex;
+            }
+
+            .weapon-passive {
+              display: none;
+            }
+          }
+        }
+      }
+
+      .mobile-content {
+        display: flex;
+        flex-direction: column;
+        margin-top: 20px;
+
+        .mobile-passive {
+
+        }
+
+        .mobile-characters {
+          .weapon-characters-container {
+            display: flex;
+            flex-wrap: wrap;
+
+            .overlay-character {
+              img {
+                width: 70px;
+                height: auto;
+                padding: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+@media screen and (max-width: 450px) {
+  .medo {
+    .weapon-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      min-height: 100px;
+      z-index: 9;
+      width: 100%;
+    }
+
+    .weapon-full-detail {
+      top: 0;
+      left: 0;
+      position: fixed;
+      z-index: 10;
+      overflow-y: scroll;
+      overflow-x: hidden;
+
+      .weapon-container {
+        flex-direction: column;
+
+        .weapon-main-info {
+          .weapon-img {
+            margin-right: 0;
+          }
+        }
+
+        .weapon-group {
+          width: 100%;
+
+          .weapon-details {
+            width: 100%;
+
+            .weapon-stats {
+              grid-template-columns: auto 100px;
+              width: 100%;
+              margin-right: 0;
+            }
+
+            .mobile-description {
+              h3 {
+                font-weight: bold;
+                font-size: 16px;
+              }
+
+              .weapon-type {
+                font-size: 15px;
+              }
+            }
+
+            .weapon-stats {
+              label.weapon-stats-level {
+                font-size: 15px;
+              }
+
+              select.weapon-stats-level {
+              }
+
+              label.weapon-stats-base-atk {
+                font-size: 15px;
+              }
+
+              span.weapon-stats-base-atk {
+              }
+
+              label.weapon-stats-second-stat {
+                font-size: 15px;
+              }
+
+              .weapon-stats-second-stat-value {
+              }
+
+              .weapon-stats-second-stat-format {
+              }
+            }
+
+            .weapon-passive {
+              h3 {
+              }
+            }
+          }
+
+          .weapon-main-info {
+            .description {
+            }
+          }
+
+          .weapon-characters {
+          }
+
+          .weapon-details {
+
+            .mobile-description {
+            }
+
+            .weapon-passive {
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
 .active-weapon {
   border: 2px solid $giwiki-orange;
 }

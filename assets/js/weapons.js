@@ -1,14 +1,89 @@
-// import '../scss/weapon.scss';
-// import 'animate.css';
+
 const $ = require('jquery');
 const Isotope = require('isotope-layout');
 jQueryBridget('isotope', Isotope, $);
 require('isotope-cells-by-row');
 
+const $weaponPhase = [
+    {
+        "text"  : "1",
+        "value" : 1
+    },
+    {
+        "text"  : "20",
+        "value" : 20
+    },
+    {
+        "text"  : "20+",
+        "value" : 21
+    },
+    {
+        "text"  : "40",
+        "value" : 40
+    },
+    {
+        "text"  : "40+",
+        "value" : 41
+    },
+    {
+        "text"  : "50",
+        "value" : 50
+    },    {
+        "text"  : "50+",
+        "value" : 51
+    },
+    {
+        "text"  : "60",
+        "value" : 60
+    },
+    {
+        "text"  : "60+",
+        "value" : 61
+    },
+    {
+        "text"  : "70",
+        "value" : 70
+    },
+    {
+        "text"  : "70+",
+        "value" : 71
+    },
+    {
+        "text"  : "80",
+        "value" : 80
+    },
+    {
+        "text"  : "80+",
+        "value" : 81
+    },
+    {
+        "text"  : "90",
+        "value" : 90
+    },
+];
+
+
+
+var filterFns = {
+    // show if number is greater than 50
+    numberGreaterThan50: function () {
+        var number = $(this).has('.number').text();
+        return parseInt(number, 10) > 50;
+    },
+    // show if name ends with -ium
+    ium: function () {
+        var name = $(this).has('.name').text();
+        return name.match(/ium$/);
+    }
+};
+
+
 
 $(window).on('load', function () {
+
+
     const weaponsRequest = $.ajax({
-        url: 'http://localhost:8000/api/weapons.json',
+        url: 'https://seeliedb.guda.club/api/weapons.json',
         type: 'GET',
         beforeSend: function () {
             $('.weapons-filter').after('<div class="ajax-loading">Chargement en cours ...</div>')
@@ -19,16 +94,17 @@ $(window).on('load', function () {
             weapons.forEach((weapon) => {
 
                 $('#weapons-list').append(
-                    '<div class="weapon" id="weapon-' + weapon.id + '" title="' + weapon.name + '">' +
+                    '<div class="weapon '+weapon.weaponType.name+' rarity-'+weapon.rarity+'" id="weapon-' + weapon.id + '" title="' + weapon.name + '">' +
                     '<img src="' + weapon.image + '" alt="' + weapon.name + '">' +
+                    '<div class="weapon-search name">' + weapon.name + '</div>' +
                     '<span class="weapon-data" ' +
                     'data-weapon-id="' + weapon.id + '"' +
                     'data-weapon-name="' + weapon.name + '"' +
-                    'data-weapon-image="' + weapon.image + '"' +
+                    'data-weapon-image="' + encodeURIComponent(JSON.stringify(weapon.image)) + '"' +
                     'data-weapon-rarity="' + weapon.rarity + '"' +
                     'data-weapon-type="' + weapon.weaponType.name + '"' +
-                    'data-weapon-description="' + weapon.description + '"' +
-                    'data-weapon-passive="' + weapon.passive + '"' +
+                    'data-weapon-description="' + encodeURIComponent(JSON.stringify(weapon.description)) + '"' +
+                    'data-weapon-passive="' + encodeURIComponent(JSON.stringify(weapon.passive)) + '"' +
                     'data-weapon-second-stat-format="' + encodeURIComponent(JSON.stringify(weapon.secondStatFormat)) + '"' +
                     'data-weapon-stats="' + encodeURIComponent(JSON.stringify(weapon.weaponStats)) + '"' +
                     'data-weapon-characters="' + encodeURIComponent(JSON.stringify(weapon.weaponType.characters)) + '"' +
@@ -36,35 +112,80 @@ $(window).on('load', function () {
                     '</span>' +
                     '</div>'
                 )
+
             })
+
+            // quick search regex
+            var qsRegex;
 
             const $grid = $('#weapons-list').isotope({
                 // main isotope options
                 itemSelector: '.weapon',
                 // set layoutMode
                 layoutMode: 'cellsByRow',
-                // getSortData: {
-                //     constellations: '[data-constellations] parseInt',
-                //     level: '[data-level] parseInt',
-                //     fetter: '[data-fetter] parseInt',
-                // },
+                filter: function(el) {
+                    return qsRegex ? $(el).children('.weapon-search').text().match( qsRegex ) : true;
+                }
             });
+
+            // use value of search field to filter
+            var $quicksearch = $('.quicksearch').keyup( debounce( function() {
+                qsRegex = new RegExp( $quicksearch.val(), 'gi' );
+                $grid.isotope();
+            }) );
+
+
+            // debounce so filtering doesn't happen every millisecond
+            function debounce( fn, threshold ) {
+                var timeout;
+                threshold = threshold || 100;
+                return function debounced() {
+                    clearTimeout( timeout );
+                    var args = arguments;
+                    var _this = this;
+                    function delayed() {
+                        fn.apply( _this, args );
+                    }
+                    timeout = setTimeout( delayed, threshold );
+                };
+            }
+
+
+            $('.type-filter, .rarity-filter').on('click', 'button', function () {
+                var filterValue = $(this).attr('data-filter');
+                // use filterFn if matches value
+                filterValue = filterFns[filterValue] || filterValue;
+                $grid.isotope({
+                    filter: filterValue,
+                });
+            }).each(function (i, buttonGroup) {
+                var $buttonGroup = $(buttonGroup);
+                $buttonGroup.on('click', 'button', function () {
+                    $buttonGroup.find('.active-filter').removeClass('active-filter');
+                    $(this).addClass('active-filter');
+                });
+            });
+
         },
         error: (err) => {
             console.log(err)
         }
     })
 
+    /**
+     * Once Ajax request is done
+     * Execute the following code
+     */
     weaponsRequest.done(() => {
         $('#weapons-list').each(function (index, item) {
             var $weapon = $(item);
             $weapon.on('click', '.weapon', function () {
                 var $weaponId = $(this).children('.weapon-data').data('weapon-id');
                 var $weaponName = $(this).children('.weapon-data').data('weapon-name');
-                var $weaponImage = $(this).children('.weapon-data').data('weapon-image');
+                var $weaponImage = JSON.parse(decodeURIComponent($(this).children('.weapon-data').data('weapon-image')));
                 var $weaponType = $(this).children('.weapon-data').data('weapon-type');
                 var $weaponRarity = $(this).children('.weapon-data').data('weapon-rarity');
-                var $weaponPassive = $(this).children('.weapon-data').data('weapon-passive');
+                var $weaponPassive = JSON.parse(decodeURIComponent($(this).children('.weapon-data').data('weapon-passive')));
                 var $weaponSecondStat = JSON.parse(decodeURIComponent($(this).children('.weapon-data').data('weapon-second-stat-format')));
                 var $weaponStats = JSON.parse(decodeURIComponent($(this).children('.weapon-data').data('weapon-stats')));
                 var $weaponSecondStatLabel = $weaponSecondStat.name;
@@ -119,12 +240,6 @@ $(window).on('load', function () {
                     })
                     .html(weaponHeader);
 
-
-
-                let $statOption = '';
-
-
-
                 var weaponDetail =
                     '<div class="weapon-hover-close"></div>' +
                     '<div class="weapon-full-detail-close">' +
@@ -136,30 +251,40 @@ $(window).on('load', function () {
                     '<div class="weapon-img">' +
                     '<img src="' + $weaponImage + '" alt="' + $weaponName + '">' +
                     '</div>' +
+                    '<div class="description">' +
                     '<h3>' + $weaponName + '</h3>' +
                     '<div class="rarity-stars"></div>' +
                     '<span class="weapon-type">' + $weaponType + '</span>' +
                     '</div>' +
+                    '</div>' +
                     '<div class="weapon-group">' +
                     '<div class="weapon-details">' +
+                    '<div class="mobile-description">' +
+                    '<h3>' + $weaponName + '</h3>' +
+                    '<div class="rarity-stars"></div>' +
+                    '<span class="weapon-type">' + $weaponType + '</span>' +
+                    '</div>' +
                     '<div class="weapon-stats">' +
-                    '<div class="weapon-stats-level">' +
-                    '<label>Niveau/Phase</label>' +
-                    '<select>' +
-                    '<option></option>' +
+                    '<label class="weapon-stats-level">Niveau/Phase</label>' +
+                    '<select class="weapon-stats-level">' +
                     '</select>' +
-                    '</div>' +
-                    '<div class="weapon-stats-base-atk">' +
-                    '<label>Attaque de base</label>' +
-                    '<span></span>' +
-                    '</div>' +
-                    '<div class="weapon-stats-second-stat">' +
-                    '<label>' + $weaponSecondStatLabel + '</label>' +
-                    '<span class="value"></span><span class="format">' + $weaponSecondStatFormat + '</span>' +
-                    '</div>' +
+                    '<label class="weapon-stats-base-atk">Attaque de base</label>' +
+                    '<span class="weapon-stats-base-atk"></span>' +
+                    '<label class="weapon-stats-second-stat">' + $weaponSecondStatLabel + '</label>' +
+                    '<span class="weapon-stats-second-stat-value">' +
+                    '<span class="value">' +
+                    '</span>' +
+                    '<span class="weapon-stats-second-stat-format">' +
+                    $weaponSecondStatFormat +
+                    '</span>' +
+                    '</span>' +
                     '</div>' +
                     '<div class="weapon-passive">' +
-                    '<p>' + $weaponPassive + '</p>' +
+                    '<div class="weapon-passive-title">' +
+                    '<h3>Passif</h3>' +
+                    '</div>' +
+                    '<div class="weapon-passive-container">' +
+                    '</div>' +
                     '</div>' +
                     '</div>' +
                     '<div class="weapon-characters">' +
@@ -169,19 +294,87 @@ $(window).on('load', function () {
                     '<div class="weapon-characters-container">' +
                     '</div>' +
                     '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mobile-content">' +
+                    '<div class="mobile-passive">' +
+                    '<div class="weapon-passive-title">' +
+                    '<h3>Passif</h3>' +
+                    '</div>' +
+                    '<div class="weapon-passive-container">' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="mobile-characters">' +
+                    '<div class="weapon-characters-title">' +
+                    '<h3>Personnages - '+$weaponType+'</h3>' +
+                    '</div>' +
+                    '<div class="weapon-characters-container">' +
+                    '</div>' +
+                    '</div>' +
                     '</div>';
+
 
                 $('.weapon-full-detail')
                     .empty()
                     .html(weaponDetail);
+
+
+                /**
+                 * Append passive on weapon
+                 */
+                $('.weapon-passive-container').empty().html($weaponPassive)
 
                 /**
                  * Append character from characters
                  */
                 $weaponCharacters.forEach((item, i) => {
                     let character = '<div class="overlay-character '+item.name.toLowerCase().replace(/\s/g, '-')+'"><img src="'+item.imageIcon+'" alt="'+item.name+'"></div>'
-                    $('.weapon-characters-container').append(character)
+                    $('.weapon-characters-container, .mobile-characters.weapon-characters-container').append(character)
                 })
+
+                /**
+                 * Append options in .weapon-stats-level
+                 */
+                $weaponPhase.forEach((item, i) => {
+                    $('select.weapon-stats-level').append($('<option>', {
+                        value: item.value,
+                        text : item.text
+                    }));
+                })
+
+                /**
+                 * Init default values
+                 * @type {*|jQuery}
+                 */
+                let $weaponStatkey = $('select.weapon-stats-level').val();
+                $weaponBaseAtkValue.forEach((item, i) => {
+                    if (item.name === $weaponStatkey) {
+                        $('span.weapon-stats-base-atk').empty().append(item.value)
+                    }
+                })
+                $weaponSecondStatValue.forEach((item, i) => {
+                    if (item.name === $weaponStatkey) {
+                        $('.weapon-stats-second-stat-value .value').empty().append(item.value)
+                    }
+                })
+
+                /**
+                 * On change get and set a value (baseAtk, SecondStat)
+                 */
+                $('select.weapon-stats-level').on('change', function() {
+                    let $weaponStatkey = $(this).val();
+                    $weaponBaseAtkValue.forEach((item, i) => {
+                        if (item.name === $weaponStatkey) {
+                            $('span.weapon-stats-base-atk').empty().append(item.value)
+                        }
+                    })
+                    $weaponSecondStatValue.forEach((item, i) => {
+                        if (item.name === $weaponStatkey) {
+                            $('.weapon-stats-second-stat-value .value').empty().append(item.value)
+                        }
+                    })
+                })
+
 
                 /**
                  * Append rating stars
@@ -191,15 +384,26 @@ $(window).on('load', function () {
                     $('.rarity-stars, .weapon-header-rarity').append(rarityStars)
                 }
 
+
             }).on('click', '.active-weapon', function () {
                 $(this).removeClass('active-weapon');
                 $('.weapon-overlay')
                     .css({display: 'none'})
-                if ($('.weapon-full-detail').is('visible')) {
-                    $('.weapon-full-detail').slideToggle()
-                }
+                $('.weapon-full-detail').css({display: 'none'})
             })
         })
+
+        /**
+         * Still ajax done
+         */
+        if ($(window).innerWidth < 992 && $(window).innerWidth > 450 ) {
+            var offset = $('.weapon-overlay').offset();
+            var bottomPos = $(window).scrollTop() + $(window).height()
+            var top = offset.top;
+            var overlayBottomPos = $(window).height() - top - $('.weapon-overlay').height();
+            overlayBottomPos = overlayBottomPos - offset.top;
+            $('.weapon-overlay, .weapon-full-detail').css({bottom: (-(bottomPos) + overlayBottomPos)});
+        }
     });
 
     /**
@@ -268,9 +472,11 @@ $(window).on('load', function () {
         if(!$('.weapon-overlay').is('visible')) {
             $('.weapon-overlay').removeClass('overlay-detailed');
             if(!$('.weapon-detail').is('visible')) {
-                $('.weapon-detail').slideToggle();
+                $('.weapon-detail').show();
             }
         }
     })
+
+
 })
 
