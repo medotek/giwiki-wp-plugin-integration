@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "webpack --watch --mode='development'",
     "build": "webpack --mode='production'",
-    "compile" : "node-sass assets/scss/weapon.scss build/main.css"
+    "compile": "node-sass assets/scss/weapon.scss build/main.css"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.5",
@@ -20,6 +20,7 @@
     "webpack-cli": "^3.1.2"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "isotope-cells-by-row": "^1.1.4"
   }
 }

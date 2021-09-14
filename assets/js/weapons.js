@@ -1,3 +1,4 @@
+require('cors');
 
 const $ = require('jquery');
 const Isotope = require('isotope-layout');
@@ -83,8 +84,11 @@ $(window).on('load', function () {
 
 
     const weaponsRequest = $.ajax({
-        url: 'https://seeliedb.guda.club/api/weapons.json',
+        url: 'api/weapons.php',
         type: 'GET',
+        headers: {
+            "Access-Control-Allow-Origin":"*"
+        },
         beforeSend: function () {
             $('.weapons-filter').after('<div class="ajax-loading">Chargement en cours ...</div>')
         },

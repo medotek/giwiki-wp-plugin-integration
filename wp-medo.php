@@ -16,25 +16,49 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+
 /**
- * Enqueue frontend scripts.
+ * Enqueue weapon scripts.
+ */
+function medo_weapons_style() {
+
+    wp_enqueue_style( 'medo-weapon-css',   plugins_url( 'build/main.css', __FILE__ ));
+
+}
+add_action( 'wp_enqueue_scripts', 'medo_weapons_style' );
+
+/**
+ * Enqueue weapon isotope scripts.
+ */
+function medo_weapons_isotope_script() {
+    wp_enqueue_script(
+        'medo-weapon-js-isotope',
+        'https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'medo_weapons_isotope_script' );
+
+/**
+ * Enqueue weapon scripts.
  */
 function medo_weapons_script() {
 
-    wp_enqueue_style( 'medo-frontend-css',   plugins_url( 'build/main.css', __FILE__ ),[ 'jquery' ], '1.1', 'all');
-
     wp_enqueue_script(
-        'medo-frontend-js',
+        'medo-weapon-js',
         plugins_url( 'build/main.js', __FILE__ ),
         [ 'jquery' ],
         '11272018'
     );
+
 }
 add_action( 'wp_enqueue_scripts', 'medo_weapons_script' );
 
 
 
 function medo_shortcode_weapons(){
+    wp_enqueue_style('medo-weapon-css');
+    wp_enqueue_script('medo-weapon-js-isotope');
+    wp_enqueue_script('medo-weapon-js');
     return '
        <div class="medo">
         <h1>Weapon section</h1>
@@ -70,5 +94,5 @@ function medo_shortcode_weapons(){
     </div>
     ';
 }
-add_shortcode('weapons', 'shortcode_weapons');
+add_shortcode('medo_weapons', 'medo_shortcode_weapons');
 
